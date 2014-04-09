@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hardsoft.bubble.Bubble xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_lil_bubble_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/w_imv_bubble_icon"
+        android:layout_width="@dimen/dim_bubble_icon"
+        android:layout_height="@dimen/dim_bubble_icon"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="5dp"
+        android:src="@drawable/ic_launcher" />
+
+    <RelativeLayout
+        android:id="@+id/w_frl_bubble_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/w_imv_bubble_icon"
+        android:padding="10dip" >
+    </RelativeLayout>
+
+</com.hardsoft.bubble.Bubble>

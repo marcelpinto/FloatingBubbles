@@ -1,0 +1,13 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="dim_bubble_icon">80sp</dimen>
+    <dimen name="dim_default_bubble_title">20sp</dimen>
+    <dimen name="dim_default_bubble_message">15sp</dimen>
+    <dimen name="dim_default_bubble_button_close">25dip</dimen>
+    
+    
+</resources>

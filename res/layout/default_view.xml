@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_lil_default_bubble_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_margin="5dp"
+    android:background="@drawable/gradient_gray"
+    android:orientation="vertical"
+    android:padding="20dip" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/w_tev_default_bubble_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Large Text"
+            android:textColor="#fff"
+            android:textSize="@dimen/dim_default_bubble_title"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/w_imb_default_bubble_close"
+            android:layout_width="@dimen/dim_default_bubble_button_close"
+            android:layout_height="@dimen/dim_default_bubble_button_close"
+            android:layout_alignParentRight="true"
+            android:background="#00000000"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_close" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="#ccc" />
+
+    <TextView
+        android:id="@+id/w_tev_default_bubble_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingTop="10dip"
+        android:text="Let the world change you so you can change the world. It will make you stronger you will make it better."
+        android:textColor="#fff"
+        android:textSize="@dimen/dim_default_bubble_message" />
+
+</LinearLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <com.capricorn.ArcLayout
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/item_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        custom:childSize="44px"
+        custom:fromDegrees="270.0"
+        custom:toDegrees="360.0" />
+
+    <ImageView
+        android:id="@+id/w_imb_arcmenu_icon"
+        android:layout_width="@dimen/dim_bubble_icon"
+        android:layout_height="@dimen/dim_bubble_icon"
+        android:background="@drawable/gradient_gray"
+        android:padding="10dip"
+        android:src="@drawable/ic_close" />
+
+</merge>
