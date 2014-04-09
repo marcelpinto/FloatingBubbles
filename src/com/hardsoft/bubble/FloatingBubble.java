@@ -1,5 +1,7 @@
 package com.hardsoft.bubble;
 
+import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,7 +19,7 @@ public class FloatingBubble implements FloatingBubbleInterface {
 	private BubbleController mBubble;
 
 	protected FloatingBubble(Context context, BubbleType type) {
-		mBubble = new BubbleController(context, this, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE));
+		mBubble = new BubbleController(context, this, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE),type);
 	}
 
 	public static class Builder {
@@ -137,6 +139,11 @@ public class FloatingBubble implements FloatingBubbleInterface {
             return this;
         }
         
+        public Builder setMenuViews(ArrayList<View> views) {
+        	B.mMenuViews = views;
+        	return this;
+        }
+        
         public Builder setOnBubbleClickListener(FloatingBubbleInterface.OnBubbleClick listener) {
         	B.mOnBubbleClick = listener;
         	return this;
@@ -158,8 +165,9 @@ public class FloatingBubble implements FloatingBubbleInterface {
          * {@link Dialog#show()} the dialog. This allows the user to do any extra processing
          * before displaying the dialog. Use {@link #show()} if you don't have any other processing
          * to do and want this to be created and displayed.
+         * @throws Exception 
          */
-        public FloatingBubble create() {
+        public FloatingBubble create() throws Exception {
             final FloatingBubble dialog = new FloatingBubble(B.mContext, mType);
             B.apply(dialog.mBubble);
             return dialog;
@@ -168,8 +176,9 @@ public class FloatingBubble implements FloatingBubbleInterface {
         /**
          * Creates a {@link AlertDialog} with the arguments supplied to this builder and
          * {@link Dialog#show()}'s the dialog.
+         * @throws Exception 
          */
-        public FloatingBubble show() {
+        public FloatingBubble show() throws Exception {
         	FloatingBubble dialog = create();
         	dialog.mBubble.setupView();
             return dialog;

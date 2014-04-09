@@ -6,6 +6,9 @@ import static android.view.MotionEvent.ACTION_UP;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
+
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -18,20 +21,22 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hardsoft.bubble.arcmenu.RayMenu;
 import com.hardsoft.bubble.data.BubbleType;
 import com.hardsoft.bubble.interfaces.FloatingBubbleInterface;
 
 public class BubbleController implements OnTouchListener {
 
-    private static final int GLOBAL_PADDING = 5;
+    private static final int GLOBAL_PADDING = 2;
 	private final Context mContext;
     private final FloatingBubbleInterface mFloatingBubbleInterface;
     private final WindowManager mWindowManager;
@@ -42,7 +47,7 @@ public class BubbleController implements OnTouchListener {
 
     private View mCustomView;
     
-    private RelativeLayout mContentView;
+    private ViewGroup mContentView;
 
     private int mIconId = -1;
     
@@ -63,6 +68,7 @@ public class BubbleController implements OnTouchListener {
 	private boolean isRemovable;
 	private ImageView mTrash;
 	private boolean hasBeenInTrash;
+	private BubbleType mBubbleType;
 
 
     public BubbleController(Context context, FloatingBubbleInterface di, WindowManager manager, BubbleType type) {
@@ -71,18 +77,29 @@ public class BubbleController implements OnTouchListener {
         mWindowManager = manager;
 
 		LayoutInflater inflater = LayoutInflater.from(mContext);
-		switch (type) {
+		mBubble = (ViewGroup) inflater.inflate(R.layout.bubble, null);
+		switch (mBubbleType = type) {
 		case BUBLE_ARCH_MENU:
-			mBubble = (ViewGroup) inflater.inflate(R.layout.ray_menu, null);
+			mContentView = new RayMenu(mContext);
+			mBubble.addView(mContentView);
 			break;
 		default:
-			mBubble = (ViewGroup) inflater.inflate(R.layout.bubble, null);
+			//mContentView = (ViewGroup) inflater.inflate(R.layout.ray_menu, null);
 			break;
 		}
 		
 		mIconView = (ImageView) mBubble.findViewById(R.id.w_imv_bubble_icon);
 		mIconView.setOnTouchListener(this);
-    	mContentView = (RelativeLayout) mBubble.findViewById(R.id.w_frl_bubble_content);
+		mIconView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (mContentView!=null && mContentView instanceof RayMenu) {
+					((RayMenu) mContentView).switchState(true);
+				}
+			}
+		});
     }
     
     
@@ -99,6 +116,27 @@ public class BubbleController implements OnTouchListener {
             mMessageView.setText(message);
         }
     }
+    
+    
+    public void setMenuItems(ArrayList<View> items) throws Exception {
+    	//TODO: create custom exception 
+    	if (mContentView==null || !(mContentView instanceof RayMenu))
+    		throw new Exception();
+    	
+    	Log.v("MPB","Creating items");
+    	RayMenu menu = (RayMenu) mContentView;
+    	for (View v: items) {
+    		menu.addItem(v, new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO callback to UI
+					
+				}
+			});
+    	}
+    	Log.v("MPB","items created");
+    }
 
     /**
      * Set the view to display in the dialog.
@@ -112,7 +150,8 @@ public class BubbleController implements OnTouchListener {
 	    		mMessageView = (TextView) view.findViewById(R.id.w_tev_default_bubble_message);
 	    	}
     	}
-        mCustomView = view;
+        mContentView = (ViewGroup) view;
+        mBubble.addView(mContentView);
     }
 
     /**
@@ -157,7 +196,6 @@ public class BubbleController implements OnTouchListener {
     	RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mContentView.getLayoutParams();
     	params.width = (int) (getScreenSize(mWindowManager).x - (mContext.getResources().getDimension(R.dimen.dim_bubble_icon)+GLOBAL_PADDING));
     	mContentView.setLayoutParams(params);
-    	mContentView.addView(mCustomView);
     	mWindowManager.addView(mBubble, mBubbleParams =getBubbleParams());
     }
     
@@ -187,7 +225,7 @@ public class BubbleController implements OnTouchListener {
 		);
 
 		paramsChat.x = 50;
-		paramsChat.y = 50;
+		paramsChat.y = 80;
 		paramsChat.gravity = Gravity.TOP | Gravity.LEFT;
 		return paramsChat;
 	}
@@ -198,7 +236,7 @@ public class BubbleController implements OnTouchListener {
 		return (ImageView) inflater.inflate(R.layout.trash, null);
 	}
 
-	private static Point getScreenSize(WindowManager wm) {
+	public static Point getScreenSize(WindowManager wm) {
 		// TODO Auto-generated method stub
 		Display display = wm.getDefaultDisplay();
 		Point size = new Point();
@@ -212,8 +250,23 @@ public class BubbleController implements OnTouchListener {
 	}
 
 
-	public void hideBubbleView() {
-		mContentView.setVisibility(View.GONE);
+	public void setContentViewVisibility(boolean isVisible) {
+		switch (mBubbleType) {
+			case BUBLE_ARCH_MENU:
+				if (mContentView==null || !(mContentView instanceof RayMenu))
+		    		return;
+		    	
+		    	((RayMenu) mContentView).setState(isVisible, false);
+				break;
+				
+			default:
+				break;
+		}
+		if (!isVisible)
+			mContentView.setVisibility(View.GONE);
+		else 
+			mContentView.setVisibility(View.VISIBLE);
+		
 	}
 
 	@Override
@@ -229,15 +282,20 @@ public class BubbleController implements OnTouchListener {
 			initialTouchX = event.getRawX();
 			initialTouchY = event.getRawY();
 			//Toast.makeText(getApplication(), "Drag it to here to remove!", Toast.LENGTH_SHORT).show();
-			hideBubbleView();
-			RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)mIconView.getLayoutParams();
+			setContentViewVisibility(false);
+			
+			//Set icon to match the top of the bubble
+			/*RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)mIconView.getLayoutParams();
 			p.addRule(RelativeLayout.ALIGN_PARENT_LEFT,0);
 			p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,0);
-			mIconView.setLayoutParams(p);
+			p.addRule(RelativeLayout.ALIGN_PARENT_TOP,1);
+			mIconView.setLayoutParams(p);*/
+			
 			if (isRemovable) {
 				Log.v("MPB","Add trash");
 				mWindowManager.addView(mTrash, getTrashParams());
 			}
+			
 			return true;
 
 		case ACTION_MOVE:
@@ -286,10 +344,7 @@ public class BubbleController implements OnTouchListener {
 			}
 
 			RelativeLayout ly =  (RelativeLayout) mBubble.findViewById(R.id.w_lil_bubble_root);
-			ly.removeAllViews();
 			//mIconView.setVisibility(View.GONE);
-			mIconView.setVisibility(View.VISIBLE);
-			mContentView.setVisibility(View.VISIBLE);
 			RelativeLayout.LayoutParams iconParams = (RelativeLayout.LayoutParams)mIconView.getLayoutParams();
 			RelativeLayout.LayoutParams contentParams = (RelativeLayout.LayoutParams)mContentView.getLayoutParams();
 			if(mBubbleParams.x < getScreenSize(mWindowManager).x / 2) {
@@ -303,10 +358,8 @@ public class BubbleController implements OnTouchListener {
 				contentParams.addRule(RelativeLayout.LEFT_OF,0);
 				contentParams.addRule(RelativeLayout.RIGHT_OF,mIconView.getId());
 		        mContentView.setLayoutParams(contentParams);
-		        ly.addView(mContentView);
-		        ly.addView(mIconView);
 		        //mContentView.setLayoutParams(lp);
-
+		        mBubbleParams.gravity = Gravity.TOP | Gravity.LEFT;
 			} else { // Set textView to left of image
 				iconParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT,0);
 				iconParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,1);
@@ -314,9 +367,7 @@ public class BubbleController implements OnTouchListener {
 				contentParams.addRule(RelativeLayout.LEFT_OF,mIconView.getId());
 				contentParams.addRule(RelativeLayout.RIGHT_OF,0);
 		        mContentView.setLayoutParams(contentParams);
-		        ly.addView(mContentView);
-		        ly.addView(mIconView);
-				
+		        mBubbleParams.gravity = Gravity.TOP | Gravity.RIGHT;
 		        //mContentView.setLayoutParams(lp);
 				//ly.removeAllViews();
 				//ly.addView(mContentView);
@@ -324,10 +375,11 @@ public class BubbleController implements OnTouchListener {
 				 
 			}
 			
+			mIconView.setVisibility(View.VISIBLE);
+			setContentViewVisibility(true);
 			
-			//mBubbleParams.x = (int) event.getRawX();
-			//mBubbleParams.y = (int) event.getRawY();
-			//mWindowManager.updateViewLayout(mBubble, mBubbleParams);
+			
+			mWindowManager.updateViewLayout(mBubble, mBubbleParams);
 			return true;
 
 		default:
@@ -351,6 +403,7 @@ public class BubbleController implements OnTouchListener {
         public FloatingBubbleInterface.OnBubbleDestroyed mOnBubbleDestroyed;
         public final BubbleType mType;
         public View mView;
+        public ArrayList<View> mMenuViews;
         
         public BubbleParams(Context context, BubbleType bubbleType) {
             mContext = context;
@@ -358,7 +411,7 @@ public class BubbleController implements OnTouchListener {
             mType = bubbleType;
         }
     
-        public void apply(BubbleController dialog) {
+        public void apply(BubbleController dialog) throws Exception {
         	dialog.isRemovable=mIsRemovable;
             if (mIcon != null) {
                 dialog.setIcon(mIcon);
@@ -371,6 +424,8 @@ public class BubbleController implements OnTouchListener {
             }
             if (mView != null) {
             	dialog.setView(mView);
+            } else if (mType == BubbleType.BUBLE_ARCH_MENU){
+            	dialog.setMenuItems(mMenuViews);
             } else {
             	LayoutInflater inflater = LayoutInflater.from(mContext);
         		View defaultView = inflater.inflate(R.layout.default_view, null);

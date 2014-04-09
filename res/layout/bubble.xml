@@ -9,15 +9,6 @@
         android:layout_width="@dimen/dim_bubble_icon"
         android:layout_height="@dimen/dim_bubble_icon"
         android:layout_alignParentLeft="true"
-        android:layout_margin="5dp"
         android:src="@drawable/ic_launcher" />
-
-    <RelativeLayout
-        android:id="@+id/w_frl_bubble_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/w_imv_bubble_icon"
-        android:padding="10dip" >
-    </RelativeLayout>
 
 </com.hardsoft.bubble.Bubble>

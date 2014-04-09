@@ -19,7 +19,6 @@ import com.hardsoft.bubble.R;
 
 public class RayMenu extends RelativeLayout {
 	private RayLayout mRayLayout;
-	private ImageView mIconView;
 
 	public RayMenu(Context context) {
 		super(context);
@@ -32,28 +31,24 @@ public class RayMenu extends RelativeLayout {
 	}
 
 	private void init(Context context) {
-		setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		setClipChildren(false);
 
 		LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		li.inflate(R.layout.ray_menu, this);
 
 		mRayLayout = (RayLayout) findViewById(R.id.item_layout);
-
-		mIconView = (ImageView) findViewById(R.id.w_imb_raymenu_icon);
-		mIconView.setClickable(true);
-		mIconView.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					mIconView .startAnimation(createHintSwitchAnimation(mRayLayout.isExpanded()));
-					mRayLayout.switchState(true);
-				}
-
-				return false;
-			}
-		});
+	}
+	
+	public void switchState(boolean anim) {
+		mRayLayout.switchState(anim);
+	}
+	
+	public void setState(boolean expand, boolean anim) {
+		if (!mRayLayout.isExpanded() && expand)
+			mRayLayout.switchState(anim);
+		else if (mRayLayout.isExpanded() && !expand)
+			mRayLayout.switchState(anim);
 	}
 
 	public void addItem(View item, OnClickListener listener) {
@@ -100,7 +95,7 @@ public class RayMenu extends RelativeLayout {
 				}
 
 				mRayLayout.invalidate();
-				mIconView.startAnimation(createHintSwitchAnimation(true));
+				//mIconView.startAnimation(createHintSwitchAnimation(true));
 
 				if (listener != null) {
 					listener.onClick(viewClicked);
